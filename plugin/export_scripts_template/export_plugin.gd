@@ -7,18 +7,19 @@ var export_plugin : AndroidExportPlugin
 func _enter_tree():
 	# Initialization of the plugin goes here.
 	export_plugin = AndroidExportPlugin.new()
+	add_autoload_singleton("GodotAdmobLite", "res://addons/GodotAdmobLite/interface.gd")
 	add_export_plugin(export_plugin)
 
 
 func _exit_tree():
 	# Clean-up of the plugin goes here.
 	remove_export_plugin(export_plugin)
+	remove_autoload_singleton("GodotAdmobLite")
 	export_plugin = null
 
 
 class AndroidExportPlugin extends EditorExportPlugin:
-	# TODO: Update to your plugin's name.
-	var _plugin_name = "GodotAndroidPluginTemplate"
+	var _plugin_name = "GodotAdmobLite"
 
 	func _supports_platform(platform):
 		if platform is EditorExportPlatformAndroid:
@@ -34,9 +35,15 @@ class AndroidExportPlugin extends EditorExportPlugin:
 	func _get_android_dependencies(platform, debug):
 		# TODO: Add remote dependices here.
 		if debug:
-			return PackedStringArray([])
+			return PackedStringArray([
+			"com.google.android.gms:play-services-ads-lite:24.0.0",
+			"com.google.android.ump:user-messaging-platform:3.2.0",
+			"androidx.preference:preference:1.2.1"])
 		else:
-			return PackedStringArray([])
+			return PackedStringArray([
+			"com.google.android.gms:play-services-ads-lite:24.0.0",
+			"com.google.android.ump:user-messaging-platform:3.2.0",
+			"androidx.preference:preference:1.2.1"])
 
 	func _get_name():
 		return _plugin_name

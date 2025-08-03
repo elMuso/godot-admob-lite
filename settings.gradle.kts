@@ -1,8 +1,9 @@
 pluginManagement {
     repositories {
+//        Changing the order here makes downloads faster
         google()
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
     }
 }
 dependencyResolutionManagement {
@@ -15,6 +16,5 @@ dependencyResolutionManagement {
     }
 }
 
-// TODO: Update project's name.
-rootProject.name = "GodotAndroidPluginTemplate"
+rootProject.name = "GodotAdmobLite"
 include(":plugin")

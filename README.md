@@ -1,99 +1,68 @@
-# Godot Android Plugin Template
-This repository serves as a quickstart template for building a Godot Android plugin for Godot 4.2+.
+# Why this instead of the other godot admob plugin?
 
-## Contents
-* An illustrative simple Godot project: [`plugin/demo`](plugin/demo)
-* Preconfigured gradle build file to build and package the contents for the Android plugin: 
-  [`plugin/build.gradle.kts`](plugin/build.gradle.kts)
-* Preconfigured export scripts template: 
-  [`plugin/export_scripts_template`](plugin/export_scripts_template)
-* Preconfigured manifest for the Android plugin:
-  [`plugin/src/main/AndroidManifest.xml`](plugin/src/main/AndroidManifest.xml)
-* Preconfigured source files for the Kotlin/Java logic of the Android plugin: 
-  [`plugin/src/main/java`](plugin/src/main/java)
+Because the other should be called godot ADS plugin, its too bloated, very confusing and since it uses the full library of admob it adds 40mb to your android app.
 
-## Usage
-**Note:** [Android Studio](https://developer.android.com/studio) is the recommended IDE for
-developing Godot Android plugins. 
-You can install the latest version from https://developer.android.com/studio.
+This one adds less than 2 mb, but it also is more limited. Only banner (with 3 positions), Interstitial and Rewarded ads are supported.
 
-To use this template, log in to github and click the green "Use this template" button at the top 
-of the repository page.
-This will let you create a copy of this repository with a clean git history.
+But since its so simple it only has 3 kotlin classes, so you can extend it to fit your needs.
 
-### Configuring the template
-After cloning your own copy to your local machine, configure the project as needed. Several 
-`TODO` have been added to the project to help identify where changes are needed; here's an 
-overview of the minimum set of modifications needed:
-* Update the name of the Android plugin. Note that the name should not contain any spaces:
-  * Open [`settings.gradle.kts`](settings.gradle.kts) and update the value for `rootProject.name`
-  * Open [`plugin/build.gradle.kts`](plugin/build.gradle.kts) and update the value for `pluginName`
-  * Open [`plugin/export_scripts_template/plugin.cfg`](plugin/export_scripts_template/plugin.cfg)
-    and update the value for `name`
-  * Open [`plugin/export_scripts_template/export_plugin.gd`](plugin/export_scripts_template/export_plugin.gd)
-    and update the value for `_plugin_name`
-* Update the package name of the Android plugin:
-  * Open [`plugin/build.gradle.kts`](plugin/build.gradle.kts) and update the value for `pluginPackageName`
-  * Make sure subdirectories under [`plugin/src/main/java`](plugin/src/main/java) match the 
-    updated package name
-  * Make sure that `package` at the top of [`GodotAndroidPlugin.kt`](plugin/src/main/java/org/godotengine/plugin/android/template/GodotAndroidPlugin.kt)
-    matches the updated package name
-* Complete the plugin configuration
-  * Open [`plugin/export_scripts_template/plugin.cfg`](plugin/export_scripts_template/plugin.cfg)
-    * Update the `description` field
-    * Update the `author` field
-    * Update the `version` field
+# Installing the plugin
 
-### Building the configured Android plugin
-- In a terminal window, navigate to the project's root directory and run the following command:
-```
-./gradlew assemble
-```
-- On successful completion of the build, the output files can be found in
-  [`plugin/demo/addons`](plugin/demo/addons)
+1. Copy the folder GodotAdmobLite to your addons project folder (create the folder if there is none)
+2. Navigate to Project -> Project Settings... -> Plugins, and ensure the plugin is enabled 
+3. Install the Godot Android build template by clicking on Project -> Install Android Build Template...
+4. Navigate to Project -> Export...
+5. In the Export window, create an Android export preset
+6. In the Android export preset, scroll to Gradle Build and set Use Gradle Build to true
 
-### Testing the Android plugin
-You can use the included [Godot demo project](plugin/demo/project.godot) to test the built Android 
-plugin
+# One time setup after installing the plugin (IMPORTANT!!!!)
 
-- Open the demo in Godot (4.2 or higher)
-- Navigate to `Project` -> `Project Settings...` -> `Plugins`, and ensure the plugin is enabled
-- Install the Godot Android build template by clicking on `Project` -> `Install Android Build Template...`
-- Open [`plugin/demo/main.gd`](plugin/demo/main.gd) and update the logic as needed to reference 
-  your plugin and its methods
-- Connect an Android device to your machine and run the demo on it
-
-#### Tips
-Additional dependencies added to [`plugin/build.gradle.kts`](plugin/build.gradle.kts) should be added to the `_get_android_dependencies`
-function in [`plugin/export_scripts_template/export_plugin.gd`](plugin/export_scripts_template/export_plugin.gd).
-
-##### Simplify access to the exposed Java / Kotlin APIs
-
-To make it easier to access the exposed Java / Kotlin APIs in the Godot Editor, it's recommended to 
-provide one (or multiple) gdscript wrapper class(es) for your plugin users to interface with.
-
-For example:
+You need an admob app id, google provides a sample one, either way, modify your android export preset's androidmanifest.xml to include this.
+If you don't do this your app WILL crash (blame google not me), as the appid is both used for admob and google's UMP
 
 ```
-class_name PluginInterface extends Object
+<manifest>
+<application>
+<!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+<meta-data
+android:name="com.google.android.gms.ads.APPLICATION_ID"
+android:value="ca-app-pub-3940256099942544~3347511713"/> <!-- MODIFY THIS!! -->
+</application>
+</manifest>
+```
 
-## Interface used to access the functionality provided by this plugin
+# How to use the plugin
 
-var _plugin_name = "GDExtensionAndroidPluginTemplate"
-var _plugin_singleton
+You interface with it with the GodotAdmobLite, using this interface you pass the AD_ID as a main argument, there are extra arguments to pass as well
 
-func _init():
-	if Engine.has_singleton(_plugin_name):
-		_plugin_singleton = Engine.get_singleton(_plugin_name)
-	else:
-		printerr("Initialization error: unable to access the java logic")
+Using this plugin showing a banner is just 3 extra lines of code
 
-## Shows a 'Hello World' toast.
-func helloWorld():
-	if _plugin_singleton:
-		_plugin_singleton.helloWorld()
-	else:
-		printerr("Initialization error")
+The initialize() method already takes care of checking for a form on ump, showing it if possible (or needed) and then triggering the complete signal
+
+```gd
+extends Node2D
+var plugin 
+func _ready() -> void:
+	GodotAdmobLite.on_initialization_complete.connect(_on_initialization_result)
+	GodotAdmobLite.initialize()
+
+func _on_initialization_result(success:bool):
+	GodotAdmobLite.load_and_show_banner("your_admob_banner_id_here",GodotAdmobLite.BannerSize.FULL_BANNER,GodotAdmobLite.BannerPosition.BOTTOM)
 
 ```
 
+IF YOU ARE NOT ON RELEASE MODE YOUR ADS WILL SHOW AS DEBUG MODE, this is enforced since google kinda cares about false impressions.
+
+Also you can interface with google's UMP by calling the methods that start with GodotAdmobLite.ump.... to show the form again or the privacy popup, or enabling debug information
+
+Use godot autocomplete to check for the available methods, or go to interface.gd then
+
+
+
+If you edit the source code and want some help here it is
+
+Used android studio narwhal 2025.1.1
+JAVA 17
+
+
+run ./gradlew assemble, the folder is generated on plugin/demo/addons/GodotAdmobLite , copy the folder to your addons folder

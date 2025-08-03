@@ -1,19 +1,19 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
 }
 
-// TODO: Update value to your plugin's name.
-val pluginName = "GodotAndroidPluginTemplate"
 
-// TODO: Update value to match your plugin's package name.
-val pluginPackageName = "org.godotengine.plugin.android.template"
+val pluginName = "GodotAdmobLite"
+val pluginPackageName = "org.godot.admob.lite"
 
 android {
     namespace = pluginPackageName
-    compileSdk = 33
+    compileSdk = 36
 
     buildFeatures {
         buildConfig = true
@@ -32,13 +32,22 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
 }
 
 dependencies {
-    implementation("org.godotengine:godot:4.3.0.stable")
+    //noinspection Aligned16KB
+    implementation("org.godotengine:godot:4.4.0.stable")
+
+    implementation("com.google.android.gms:play-services-ads-lite:24.0.0")
+    implementation("com.google.android.ump:user-messaging-platform:3.2.0")
+    implementation("androidx.preference:preference:1.2.1")
     // TODO: Additional dependencies should be added to export_plugin.gd as well.
 }
 
