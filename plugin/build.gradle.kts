@@ -1,10 +1,10 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+//import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+//import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+//    id("org.jetbrains.kotlin.android")
 }
 
 
@@ -34,12 +34,12 @@ android {
     }
 }
 
-tasks.withType<KotlinJvmCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
-        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
-    }
-}
+//tasks.withType<KotlinJvmCompile>().configureEach {
+//    compilerOptions {
+//        jvmTarget.set(JvmTarget.JVM_17)
+//        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+//    }
+//}
 
 dependencies {
     //noinspection Aligned16KB

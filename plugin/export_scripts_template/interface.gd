@@ -89,6 +89,8 @@ func ump_debug_reset():
 func initialize():
 	if _android_plugin:
 		_android_plugin.initialize()
+    else:
+        on_initialization_complete.emit(false)
 
 #If size is bigger than 40 it will be treated as width
 func load_and_show_banner_with_fixed_width(id:String, size:int, position:BannerPosition):
@@ -105,10 +107,14 @@ func destroy_banner(id:String):
 func load_interstitial(id:String):
 	if _android_plugin:
 		_android_plugin.loadInterstitial(id)
+	else:
+	    on_interstitial_loaded.emit(id,false)
 
 func show_interstitial(id:String):
 	if _android_plugin:
 		_android_plugin.showInterstitial(id)
+	else:
+	    on_interstitial_shown(id,InterstitialResult.FAILED)
 
 func release_interstitial(id:String):
 	if _android_plugin:
@@ -117,11 +123,17 @@ func release_interstitial(id:String):
 func load_rewarded(id:String):
 	if _android_plugin:
 		_android_plugin.loadRewarded(id)
+	else:
+	    on_rewarded_loaded.emit(id,false)
 
 func show_rewarded(id:String):
 	if _android_plugin:
 		_android_plugin.showRewarded(id)
+	else:
+	    on_reward_shown.emit(id,RewardResult.FAILED)
 
 func release_rewarded(id:String):
 	if _android_plugin:
 		_android_plugin.releaseRewarded(id)
+	else:
+	    on_reward_received.emit(id,0,"")
